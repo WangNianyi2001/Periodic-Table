@@ -1,75 +1,58 @@
 {
 	'use strict';
 
-	const blocks = 'spdf';
-	let
-		number = 1,
-		row = 1;
-		_block = 1,
-		block = 1,
-		outer = 1,
-		current = 1,
-		aufbau = [[0]];
+	let number = 1, period = 1, _subshell = 1, subshell = 1, outer = 1, current = 1, aufbau = [[0]];
 	
-	const Element = function(name, electrons) {
+	const Element = function(name) {
 		this.name = name;
 		this.number = number++;
 		this.outer = outer++;
-		this.current = current++;
-		block = _block === 1 ? 1 : ~~(row / 2 + 1) - _block + 2;
-		this.block = blocks[block - 1];
-		this.row = row;
-		++aufbau[row - Math.max(0, block - 2) - 1][block - 1];
+		this.subshell = (subshell = _subshell === 1 ? 1 : ~~(period / 2 + 1) - _subshell + 2) - 1;
+		this.period = period;
+		++aufbau[period - Math.max(0, subshell - 2) - 1][subshell - 1];
 		this.electrons = aufbau.map(_ => _.slice());
+		this.aufbau = true;
 
-		if(current > block * 4 - 2) {
+		if(++current > subshell * 4 - 2) {
 			current = 1;
-			++_block;
+			++_subshell;
 		}
-		if(_block > ~~(row / 2 + 1)) {
-			_block = 1;
+		if(_subshell << 1 > period + 2) {
+			_subshell = 1;
 			outer = 1;
-			++row;
-			aufbau.push(Array(row).fill(0));
+			++period;
+			aufbau.push(Array(period).fill(0));
 		}
 	};
 
-	Object.defineProperty(Element.prototype, 'valence', {
+	Object.defineProperty(Element.prototype, 'valency', {
 		get() {
-			let res = [], o, s;
-			outer: for(o = 0; o < this.electrons.length; ++o) {
-				const orbital = this.electrons[o];
-				for(s = 0; s < orbital.length; ++s) {
-					const sub = orbital[s];
-					if(sub && sub !== 4 * s + 2) {
+			const template = Array(7).fill(0).map((_, i) => i * 4 + 2);
+			const res = [];
+			let begin = { shell: null, sub: null };
+			outer: for(begin.shell = 0; begin.shell < this.electrons.length; ++begin.shell) {
+				const shell = this.electrons[begin.shell];
+				while(shell.length && !shell[shell.length - 1])
+					shell.pop();
+				for(let i = shell.length - 1; i >= 0; --i) {
+					if(shell[i] !== template[i]) {
+						begin.sub = i;
 						break outer;
 					}
 				}
 			}
-			for(; o < this.electrons.length; ++o) {
-				const orbital = this.electrons[o];
-				for(; s < orbital.length; ++s) {
-					if(orbital[s])
-						res.push('' + (o + 1) + blocks[s] + orbital[s]);
-				}
-				s = 0;
-			}
-			if(!res.length) {
-				console.log(this.name, this.outer, (~~(this.row / 2 + 1)) ** 2 * 2);
-				if(this.outer === (~~(this.row / 2 + 1)) ** 2 << 1) {
-					this.electrons.forEach((orbital, o) => {
-						const s = orbital.reduce(([r, i], v) => v ? [i + 1, i + 1] : [r, i + 1], [0, 0])[0] - 1;
-						res.push('' + (o + 1) + blocks[s] + orbital[s]);
-					})
-				} else {
-					const o = this.electrons.length - 1;
-					const s = this.electrons[o].reduce(([r, i], v) => v ? [i + 1, i + 1] : [r, i + 1], [0, 0])[0] - 1;
-					res.push('' + (o + 1) + blocks[s] + this.electrons[o][s]);
-				}
+			if(begin.sub === null)
+				return [];
+			res.push([begin.shell + 1, begin.sub, this.electrons[begin.shell][begin.sub]]);
+			for(++begin.shell; begin.shell < this.electrons.length; ++begin.shell, begin.sub = 0) {
+				const shell = this.electrons[begin.shell];
+				while(shell.length && !shell[shell.length - 1])
+					shell.pop();
+				res.push([begin.shell + 1, shell.length - 1, shell[shell.length - 1]]);
 			}
 			return res;
 		},
-		configurable: true, enumerable: true
+		enumerable: true, configurable: true
 	});
 
 	const elements =
@@ -78,8 +61,9 @@
 
 	[57, 58, 64, 89, 90, 91, 92, 93, 96].forEach(_ => {
 		const element = elements[_ - 1];
-		++element.electrons[element.row - 2][2];
-		--element.electrons[element.row - 3][3];
+		++element.electrons[element.period - 2][2];
+		--element.electrons[element.period - 3][3];
+		element.aufbau = false;
 	});
 
 	window.elements = elements;
