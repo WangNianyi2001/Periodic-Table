@@ -26,7 +26,7 @@
 			$valency.classList.add('valency');
 			$block.appendChild($valency);
 		}
-		$block.style.gridRow = element.period + 1;
+		$block.style.gridRow = element.period + 2;
 		$article.appendChild($block);
 	}
 }

@@ -9,10 +9,34 @@
 		<article>
 			<h1>Periodic Table</h1>
 			<p id="signature">Made by Nianyi Wang</p>
-			<div id="f" class="block">f-2</div>
-			<div id="d" class="block">d-1</div>
-			<div id="p" class="block">p</div>
-			<div id="s" class="block">s</div>
+			<div id="f" class="block">
+				<span>f-2</span>
+				<div><script>
+					for(let i = 1; i <= 14; ++i)
+						document.write(`<span>f${i}</span>`);
+				</script></div>
+			</div>
+			<div id="d" class="block">
+				<span>d-1</span>
+				<div><script>
+					for(let i = 1; i <= 10; ++i)
+						document.write(`<span>d${i}</span>`);
+				</script></div>
+			</div>
+			<div id="p" class="block">
+				<span>p-0</span>
+				<div><script>
+					for(let i = 1; i <= 6; ++i)
+						document.write(`<span>p${i}</span>`);
+				</script></div>
+			</div>
+			<div id="s" class="block">
+				<span>s-0</span>
+				<div class="akali">
+					<span>s0</span>
+					<span>s1</span>
+				</div>
+			</div>
 		</article>
 		<script src="elements.js"></script>
 		<script src="index.js"></script>
