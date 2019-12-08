@@ -29,4 +29,12 @@
 		$block.style.gridRow = element.period + 2;
 		$article.appendChild($block);
 	}
+
+	function resize() {
+		document.documentElement.style.fontSize =
+			0.015 * Math.max(innerWidth, innerHeight) + 'px';
+		document.body.style.height = innerHeight + 'px';
+	}
+	document.addEventListener('DOMContentLoaded', resize);
+	window.addEventListener('resize', resize);
 }
